@@ -83,10 +83,10 @@ class _EventsScreenState extends State<EventsScreen> {
         foregroundColor: Colors.white,
       ),
 
-      /// 🔥 MODERN BACKGROUND STARTS HERE
+      
       body: Stack(
         children: [
-          /// 🌄 BACKGROUND IMAGE
+          
           Positioned.fill(
             child: Image.asset(
               "assets/images/cultural.jpg",
@@ -94,7 +94,7 @@ class _EventsScreenState extends State<EventsScreen> {
             ),
           ),
 
-          /// 🌫️ DARK + GRADIENT OVERLAY
+          
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -111,11 +111,11 @@ class _EventsScreenState extends State<EventsScreen> {
             ),
           ),
 
-          /// 💎 MAIN CONTENT
+      
           SafeArea(
             child: Column(
               children: [
-                /// 🔹 GLASS SEARCH + FILTER PANEL
+                
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: ClipRRect(
@@ -155,7 +155,7 @@ class _EventsScreenState extends State<EventsScreen> {
 
                             const SizedBox(height: 12),
 
-                            /// 📂 CATEGORY FILTER
+                            
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -201,7 +201,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   ),
                 ),
 
-                /// 📋 EVENTS LIST
+                
                 Expanded(
                   child: _buildEventsList(_getFilteredEvents()),
                 ),
@@ -226,7 +226,7 @@ class _EventsScreenState extends State<EventsScreen> {
       return const Center(
         child: Text(
           "No events found",
-          style: TextStyle(color: Colors.white), // visible on dark bg
+          style: TextStyle(color: Colors.white), 
         ),
       );
     }
