@@ -1,0 +1,249 @@
+import 'package:flutter/material.dart';
+import '../../config/theme.dart';
+import '../../models/event_model.dart';
+import '../../widgets/event_card.dart';
+import 'create_event_screen.dart';
+
+class EventsScreen extends StatefulWidget {
+  const EventsScreen({super.key});
+
+  @override
+  State<EventsScreen> createState() => _EventsScreenState();
+}
+
+class _EventsScreenState extends State<EventsScreen> {
+
+  int _selectedCategory = 0;
+
+  final TextEditingController _searchController = TextEditingController();
+
+  List<EventModel> events = [];
+
+  final List<String> _categories = [
+    'All',
+    'Academic',
+    'Career',
+    'Cultural',
+    'Sports',
+    'Social',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    events = EventModel.getMockEvents();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openCreateEventScreen() async {
+
+    final newEvent = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateEventScreen(),
+      ),
+    );
+
+    if (newEvent != null && newEvent is EventModel) {
+      setState(() {
+        events.add(newEvent);
+      });
+    }
+  }
+
+  List<EventModel> _getFilteredEvents() {
+
+    List<EventModel> filtered = events;
+
+    if (_searchController.text.isNotEmpty) {
+      filtered = filtered.where((event) {
+        return event.title
+            .toLowerCase()
+            .contains(_searchController.text.toLowerCase());
+      }).toList();
+    }
+
+    if (_selectedCategory != 0) {
+      filtered = filtered.where((event) {
+        return event.category == _categories[_selectedCategory];
+      }).toList();
+    }
+
+    return filtered;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+
+      appBar: AppBar(
+        title: const Text('Events'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+      ),
+
+      body: Column(
+        children: [
+
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.grey.shade100,
+
+            child: Column(
+              children: [
+
+                TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Search events...',
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+
+                  child: Row(
+                    children: _categories.asMap().entries.map((entry) {
+
+                      return GestureDetector(
+
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = entry.key;
+                          });
+                        },
+
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+
+                          decoration: BoxDecoration(
+                            color: _selectedCategory == entry.key
+                                ? AppTheme.primary
+                                : Colors.white,
+
+                            borderRadius: BorderRadius.circular(20),
+
+                            border: _selectedCategory == entry.key
+                                ? null
+                                : Border.all(color: Colors.grey.shade300),
+                          ),
+
+                          child: Text(
+                            entry.value,
+                            style: TextStyle(
+                              color: _selectedCategory == entry.key
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: _buildEventsList(_getFilteredEvents()),
+          ),
+        ],
+      ),
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openCreateEventScreen,
+        icon: const Icon(Icons.add),
+        label: const Text('Create Event'),
+        backgroundColor: AppTheme.primary,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildEventsList(List<EventModel> events) {
+
+    if (events.isEmpty) {
+      return const Center(
+        child: Text("No events found"),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: events.length,
+      itemBuilder: (context, index) {
+
+        return EventCard(
+          event: events[index],
+          onTap: () => _showEventDetails(context, events[index]),
+        );
+      },
+    );
+  }
+
+  void _showEventDetails(BuildContext context, EventModel event) {
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+
+      builder: (context) {
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+
+              Text(
+                event.title,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(event.description),
+
+              const SizedBox(height: 10),
+
+              Text("Location: ${event.location}"),
+
+              Text("Organizer: ${event.organizer}"),
+
+              Text("Date: ${event.date}"),
+
+              Text("Time: ${event.timeRange}"),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

@@ -1,0 +1,84 @@
+name: campus_connect
+description: A comprehensive Campus Connect application for university students, faculty, and staff.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core Dependencies
+  google_fonts: ^6.1.0
+  provider: ^6.0.5
+  shared_preferences: ^2.2.2
+  intl: ^0.18.1
+  image_picker: ^1.0.7
+  camera: ^0.11.0
+  google_mlkit_object_detection: ^0.3.0
+  path_provider: ^2.1.5
+  path: ^1.8.3
+  # Navigation & UI
+  flutter_native_splash: ^2.3.2
+  carousel_slider: ^4.2.1
+  smooth_page_indicator: ^1.1.0
+  url_launcher: ^6.3.2
+  flutter_markdown: ^0.7.0
+  # Icons
+  cupertino_icons: ^1.0.2
+  font_awesome_flutter: ^10.6.0
+
+  # Maps (Uncomment when ready for production)
+  # google_maps_flutter: ^2.5.0
+
+  # Firebase (Uncomment when ready for backend)
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.13.0
+  firebase_messaging: ^14.7.0
+  speech_to_text: ^6.6.0
+  connectivity_plus: ^5.0.2
+  # Maps & Location
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+
+  # Network
+  # dio: ^5.4.0
+
+  # Charts
+  # fl_chart: ^0.63.0
+
+  http: any
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  http_parser: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.6
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logo.png1
+    - assets/icons/kisii.jpg
+    - assets/images/logo.png
+    - assets/images/kisii.jpg
+    - assets/images/img.png
+    - assets/images/img_1.png
+    - assets/images/Admin_block.png
+    - assets/images/Ict_block.png
+    - assets/images/Library.png
+    - assets/images/main_gate.png
+    - assets/images/PV.png
+    - assets/images/sakagwa_tcblock.png
+    - assets/images/School_of_law_Agriculture.png
+    - assets/videos/profile.mp4
+      

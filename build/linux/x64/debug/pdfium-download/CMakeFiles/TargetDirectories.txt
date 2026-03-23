@@ -1,0 +1,3 @@
+/home/roomaster/StudioProjects/Campus-connect-/build/linux/x64/debug/pdfium-download/CMakeFiles/pdfium-download.dir
+/home/roomaster/StudioProjects/Campus-connect-/build/linux/x64/debug/pdfium-download/CMakeFiles/edit_cache.dir
+/home/roomaster/StudioProjects/Campus-connect-/build/linux/x64/debug/pdfium-download/CMakeFiles/rebuild_cache.dir

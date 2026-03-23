@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Campus Connect - Your University Companion">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Campus Connect</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #1E88E5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .loading {
+        text-align: center;
+        color: white;
+    }
+    .loading-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    .loading-text {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .loading-subtext {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="loading">
+  <div class="loading-icon">🎓</div>
+  <div class="loading-text">Campus Connect</div>
+  <div class="loading-subtext">Loading...</div>
+</div>
+
+<script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
