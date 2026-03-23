@@ -36,10 +36,10 @@ dependencies:
   # google_maps_flutter: ^2.5.0
 
   # Firebase (Uncomment when ready for backend)
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.16.0
-  cloud_firestore: ^4.13.0
-  firebase_messaging: ^14.7.0
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.6.0
+  firebase_messaging: ^15.2.0
   speech_to_text: ^6.6.0
   connectivity_plus: ^5.0.2
   # Maps & Location
@@ -81,4 +81,7 @@ flutter:
     - assets/images/sakagwa_tcblock.png
     - assets/images/School_of_law_Agriculture.png
     - assets/videos/profile.mp4
+    - assets/images/football.jpg
+    - assets/images/cultural.jpg
+    
       

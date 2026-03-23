@@ -9,7 +9,6 @@ class CreateEventScreen extends StatefulWidget {
 }
 
 class _CreateEventScreenState extends State<CreateEventScreen> {
-
   final GlobalKey<FormState> final_formKey = GlobalKey<FormState>();
 
   String eventName = '';
@@ -34,7 +33,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   ];
 
   Future<void> _selectEventDate(BuildContext context) async {
-
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: eventDate,
@@ -50,7 +48,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   }
 
   Future<void> _submitForm() async {
-
     if (!final_formKey.currentState!.validate()) return;
 
     final_formKey.currentState!.save();
@@ -90,153 +87,157 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text('Create Event'),
       ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Form(
-          key: final_formKey,
-
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Event Title',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Enter event title' : null,
-                  onSaved: (value) => eventName = value!,
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (value) => description = value ?? '',
-                ),
-
-                const SizedBox(height: 16),
-
-                DropdownButtonFormField<String>(
-                  initialValue: category,
-                  decoration: const InputDecoration(
-                    labelText: "Category",
-                    border: OutlineInputBorder(),
-                  ),
-                  items: categories
-                      .map((c) => DropdownMenuItem(
-                    value: c,
-                    child: Text(c),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      category = value!;
-                    });
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Location',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (value) => location = value ?? '',
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Building',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (value) => building = value ?? '',
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Organizer',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (value) => organizer = value ?? '',
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Organizer Contact',
-                    border: OutlineInputBorder(),
-                  ),
-                  onSaved: (value) => organizerContact = value ?? '',
-                ),
-
-                const SizedBox(height: 16),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Capacity',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onSaved: (value) =>
-                  capacity = int.tryParse(value ?? "100") ?? 100,
-                ),
-
-                const SizedBox(height: 20),
-
-                InkWell(
-                  onTap: () => _selectEventDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today),
-                        const SizedBox(width: 10),
-                        Text(
-                          "Date: ${eventDate.day}-${eventDate.month}-${eventDate.year}",
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text("Create Event"),
-                  ),
-                )
-              ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              "assets/images/football.jpg",
+              fit: BoxFit.cover,
             ),
           ),
-        ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.55),
+                    Colors.black.withOpacity(0.35),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: final_formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Event Title',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Enter event title'
+                            : null,
+                        onSaved: (value) => eventName = value!,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Description',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSaved: (value) => description = value ?? '',
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        initialValue: category,
+                        decoration: const InputDecoration(
+                          labelText: "Category",
+                          border: OutlineInputBorder(),
+                        ),
+                        items: categories
+                            .map((c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(c),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            category = value!;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Location',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSaved: (value) => location = value ?? '',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Building',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSaved: (value) => building = value ?? '',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Organizer',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSaved: (value) => organizer = value ?? '',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Organizer Contact',
+                          border: OutlineInputBorder(),
+                        ),
+                        onSaved: (value) => organizerContact = value ?? '',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Capacity',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        onSaved: (value) =>
+                            capacity = int.tryParse(value ?? "100") ?? 100,
+                      ),
+                      const SizedBox(height: 20),
+                      InkWell(
+                        onTap: () => _selectEventDate(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Date: ${eventDate.day}-${eventDate.month}-${eventDate.year}",
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      isLoading
+                          ? const CircularProgressIndicator()
+                          : SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: _submitForm,
+                                child: const Text("Create Event"),
+                              ),
+                            )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
