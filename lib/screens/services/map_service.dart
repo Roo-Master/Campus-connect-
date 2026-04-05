@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
 import '../../models/building_model.dart';
-import '../../models/room_model.dart';
+import '../../models/room_model.dart' hide RoomModel;
 
 class MapService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -54,8 +54,8 @@ class MapService {
     final results = snapshot.docs
         .map((doc) => RoomModel.fromFirestore(doc.data(), doc.id))
         .where((room) =>
-            room.roomName.toLowerCase().contains(query.toLowerCase()) ||
-            room.buildingName.toLowerCase().contains(query.toLowerCase()))
+            room?.roomName.toLowerCase().contains(query.toLowerCase()) ||
+            room?.buildingName.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return results;
@@ -223,4 +223,10 @@ class MapService {
     }
     await batch.commit();
   }
+}
+
+extension on Object? {
+  get roomName => null;
+
+  get buildingName => null;
 }

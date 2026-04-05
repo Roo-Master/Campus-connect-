@@ -692,4 +692,5 @@ class RoomModel {
     required this.type,
     required this.capacity,
   });
+
 }

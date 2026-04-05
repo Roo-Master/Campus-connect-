@@ -73,7 +73,7 @@ class _MapScreenState extends State<MapScreen> {
 
     final results = await _mapService.searchRooms(query);
     setState(() {
-      _searchResults = results;
+      _searchResults = results.cast<RoomModel>();
       _showSearchResults = true;
     });
   }
