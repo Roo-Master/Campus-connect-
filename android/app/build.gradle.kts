@@ -1,62 +1,45 @@
 plugins {
-    id  "com.android.application";
-    id  "kotlin-android";
-    id  "dev.flutter.flutter-gradle-plugin";
-}
-
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties['flutter.versionCode']
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties['flutter.versionName']
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace "com.campusconnect.app"
-    compileSdk 34
-    ndkVersion flutter.ndkVersion
+    namespace = "com.campusconnect.app"
 
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_1_8
-                        targetCompatibility JavaVersion.VERSION_1_8
-            }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
+    // ⚡ Update compileSdk and NDK for plugin compatibility
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        applicationId "com.campusconnect.app"
-        minSdk 21
-        targetSdk 34
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        applicationId = "com.campusconnect.app"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+        multiDexEnabled = true // optional, avoids dex errors if many dependencies
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
 flutter {
-    source '../..'
-}
-
-dependencies {}
+    source = "../.."
+}ls
