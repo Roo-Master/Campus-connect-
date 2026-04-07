@@ -89,7 +89,7 @@ class _EventsScreenState extends State<EventsScreen> {
           
           Positioned.fill(
             child: Image.asset(
-              "assets/images/cultural.jpg",
+              "assets/images/cultural.png",
               fit: BoxFit.cover,
             ),
           ),
@@ -271,7 +271,7 @@ class _EventsScreenState extends State<EventsScreen> {
             ],
           ),
         );
-      },
+      }
     );
   }
 }

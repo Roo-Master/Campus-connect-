@@ -86,5 +86,7 @@ flutter:
     - assets/videos/profile.mp4
     - assets/images/football.png
     - assets/images/cultural.png
+    - assets/images/football.jpg
+    - assets/images/cultural.jpg
     
       

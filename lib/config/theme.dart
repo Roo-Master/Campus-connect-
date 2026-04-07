@@ -397,6 +397,12 @@ class AppTheme {
         return Colors.red;
       case 'meeting':
         return Colors.cyan;
+        case 'scheduler':
+          return Colors.amber;
+          case 'transport':
+            return Colors.brown;
+            case 'attendance':
+              return Colors.lime;
       default:
         return primary;
     }

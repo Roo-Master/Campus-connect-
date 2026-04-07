@@ -1,5 +1,6 @@
 import 'package:campus_connect/models/user_model.dart';
 import 'package:campus_connect/screens/dashboard/schedule_screen.dart';
+import 'package:campus_connect/screens/services/attendance_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -123,6 +124,22 @@ class HomeTab extends StatelessWidget {
             builder: (context, notificationService, _) {
               return Stack(
                 children: [
+IconButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AiChatScreen(),
+      ),
+    );
+  },
+  icon: const Icon(
+    Icons.psychology_outlined,
+    color: Colors.deepPurple,
+    size: 30,
+  ),
+),
+              
                   IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -322,29 +339,38 @@ class HomeTab extends StatelessWidget {
         Navigator.push(
             context, MaterialPageRoute(builder: (_) => const GradesScreen()));
         break;
-      case 'fees':
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return FeesScreen(
-                userModel: userModel, user: userModel, term: '', // Pass UserModel directly
-              );
-            },
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 300),
-          ),
+   case 'fees':
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return FeesScreen(
+          user: userModel,   // <-- pass UserModel here
+          term: 'Semester 1', // <-- replace with your actual term
         );
-        break;
+      },
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+  );
+  break;
       case 'transport':
         Navigator.push(context,
             MaterialPageRoute(builder: (_) => const TransportScreen()));
         break;
+       case 'attendance':
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => AttendanceScreen(user: userModel),
+    ),
+  );
+  break;
 
       case 'emergency':
         Navigator.push(context,

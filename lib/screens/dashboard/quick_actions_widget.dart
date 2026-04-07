@@ -18,6 +18,8 @@ class QuickActionsWidget extends StatelessWidget {
       {'icon': Icons.warning, 'label': 'Emergency', 'color': Colors.red},
       {'icon': Icons.event, 'label': 'Events', 'color': Colors.cyan},
       {'icon': Icons.class_outlined, 'label': 'Scheduler', 'color': Colors.pink},
+      {'icon': Icons.check_circle_outline, 'label': 'Attendance', 'color': Colors.lime},
+      {'icon': Icons.person, 'label': 'Profile', 'color': Colors.teal},
     ];
 
     return Column(

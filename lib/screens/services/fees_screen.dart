@@ -2,20 +2,27 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:pdf/pdf.dart' as pw;
 import '../../models/user_model.dart';
+import '../services/profile_services.dart';
 
 class FeesScreen extends StatefulWidget {
-  final UserModel user;
-  final String term; // Pass semester/term info if needed
+  final UserModel? user;
+  final String term;
 
-  const FeesScreen({super.key, required this.user, required this.term, required userModel});
+  const FeesScreen({
+    super.key,
+    this.user,
+    required this.term,
+  });
 
   @override
   State<FeesScreen> createState() => _FeesScreenState();
 }
 
 class _FeesScreenState extends State<FeesScreen> {
-  List<Map<String, dynamic>> transactions = [
+  final List<Map<String, dynamic>> transactions = [
     {
       "no": 1,
       "date": "01/09/2024",
@@ -48,186 +55,288 @@ class _FeesScreenState extends State<FeesScreen> {
   int rowsPerPage = 5;
 
   @override
-  Widget build(BuildContext context) {
-    final user = widget.user;
+  void dispose() {
+    // Add controllers here later if needed
+    super.dispose();
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        elevation: 2,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text("Fee Statement"),
-      ),
-      backgroundColor: Colors.grey.shade100,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            /// STUDENT DETAILS HEADER
-            Container(
-              width: double.infinity,
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("STUDENTNAME: ${user.fullName}"),
-                        Text("PROGRAMME: ${user.program ?? ''}"),
-                        Text("DEPARTMENT: ${user.department ?? ''}"),
-                      ],
-                    ),
-                  ),
-                  Column(
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProfileService>(
+      builder: (context, profileService, child) {
+        final currentUser = widget.user ?? profileService.user;
+
+        if (currentUser == null) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final totalDebit = transactions.fold<int>(
+          0,
+          (sum, row) => sum + (row["debit"] as int),
+        );
+
+        final totalCredit = transactions.fold<int>(
+          0,
+          (sum, row) => sum + (row["credit"] as int),
+        );
+
+        final remainingBalance = totalDebit - totalCredit;
+
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.blue,
+            elevation: 2,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: const Text("Fee Statement"),
+          ),
+          backgroundColor: Colors.grey.shade100,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                /// STUDENT DETAILS HEADER
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("REGNO: ${user.studentId ?? ''}"),
-                      Text("ADMISSION YEAR: ${user.year ?? ''}"),
-                      Text("YEAR OF STUDY: Year ${user.year ?? ''}"),
-                      Text("TERM: ${widget.term}"),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("STUDENTNAME: ${currentUser.fullName}"),
+                            Text("PROGRAMME: ${currentUser.program ?? ''}"),
+                            Text("DEPARTMENT: ${currentUser.department ?? ''}"),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("REGNO: ${currentUser.studentId ?? ''}"),
+                          Text("ADMISSION YEAR: ${currentUser.year ?? ''}"),
+                          Text("YEAR OF STUDY: Year ${currentUser.year ?? ''}"),
+                          Text("TERM: ${widget.term}"),
+                        ],
+                      ),
                     ],
-                  )
-                ],
-              ),
-            ),
+                  ),
+                ),
 
-            const Divider(height: 1),
+                const Divider(height: 1),
 
-            /// UNIVERSITY NAVBAR
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              color: Colors.white,
-              child: Row(
-                children: [
-                  const Text(
-                    "Kisii University",
-                    style: TextStyle(
-                      fontSize: 22,
+                /// UNIVERSITY NAVBAR
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      const Text(
+                        "Kisii University",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const Spacer(),
+                      Stack(
+                        children: [
+                          const Icon(
+                            Icons.notifications_outlined,
+                            size: 28,
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Text(
+                                "0",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Row(
+                        children: [
+                          const Icon(Icons.person_outline),
+                          const SizedBox(width: 6),
+                          Text("Hi, ${currentUser.firstName ?? ''}"),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// SEMESTER TITLE
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    widget.term,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                      fontSize: 16,
                     ),
                   ),
-                  const Spacer(),
-                  Stack(
+                ),
+
+                const SizedBox(height: 10),
+
+                /// TABLE CONTAINER
+                Container(
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: PaginatedDataTable(
+                    columnSpacing: 20,
+                    header: const Text(
+                      "Fee Statement",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    rowsPerPage: rowsPerPage,
+                    columns: const [
+                      DataColumn(label: Text("No")),
+                      DataColumn(label: Text("Date")),
+                      DataColumn(label: Text("Ref")),
+                      DataColumn(label: Text("Description")),
+                      DataColumn(label: Text("Debit(KES)")),
+                      DataColumn(label: Text("Credit(KES)")),
+                      DataColumn(label: Text("Balance(KES)")),
+                    ],
+                    source: FeeTable(transactions),
+                  ),
+                ),
+
+                /// TOTALS
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.notifications_outlined, size: 28),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Text(
-                            "0",
-                            style: TextStyle(fontSize: 10, color: Colors.white),
-                          ),
+                      Text(
+                        "Total Debit: KES $totalDebit",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Total Credit: KES $totalCredit",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Remaining Balance: KES $remainingBalance",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: remainingBalance > 0
+                              ? Colors.red
+                              : Colors.green,
                         ),
-                      )
+                      ),
                     ],
                   ),
-                  const SizedBox(width: 20),
-                  Row(
-                    children: [
-                      const Icon(Icons.person_outline),
-                      const SizedBox(width: 6),
-                      Text("Hi, ${user.firstName ?? ''}"),
-                    ],
-                  )
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// SEMESTER TITLE
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.term,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 10),
+                /// ACTION BUTTONS
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        final file = await generateFeeStatementPDF(
+                          transactions,
+                          currentUser,
+                          widget.term,
+                        );
 
-            /// TABLE CONTAINER
-            Container(
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: PaginatedDataTable(
-                columnSpacing: 30,
-                header: const Text(
-                  "Fee Statement",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Statement saved to ${file.path}'),
+                            backgroundColor: Colors.blue,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.download),
+                      label: const Text("Download Statement"),
+                    ),
+                    const SizedBox(width: 20),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        final file = await generateFeeStatementPDF(
+                          transactions,
+                          currentUser,
+                          widget.term,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('PDF saved to ${file.path}'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.picture_as_pdf),
+                      label: const Text("Export PDF"),
+                    ),
+                  ],
                 ),
-                rowsPerPage: rowsPerPage,
-                columns: const [
-                  DataColumn(label: Text("No")),
-                  DataColumn(label: Text("Date")),
-                  DataColumn(label: Text("Ref")),
-                  DataColumn(label: Text("Description")),
-                  DataColumn(label: Text("Debit(KES)")),
-                  DataColumn(label: Text("Credit(KES)")),
-                  DataColumn(label: Text("Balance(KES)")),
-                ],
-                source: FeeTable(transactions),
-              ),
-            ),
 
-            const SizedBox(height: 10),
-
-            /// ACTION BUTTONS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.download),
-                  label: const Text("Download Statement"),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    final file = await generateFeeStatementPDF(transactions, user, widget.term);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('PDF saved to ${file.path}'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.picture_as_pdf),
-                  label: const Text("Export PDF"),
-                ),
+                const SizedBox(height: 40),
               ],
             ),
-
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
+  /// PDF generation with totals
   Future<File> generateFeeStatementPDF(
-      List transactions, UserModel user, String term) async {
+    List<Map<String, dynamic>> transactions,
+    UserModel user,
+    String term,
+  ) async {
     final pdf = pw.Document();
+
+    final totalDebit = transactions.fold<int>(
+      0,
+      (sum, row) => sum + (row["debit"] as int),
+    );
+
+    final totalCredit = transactions.fold<int>(
+      0,
+      (sum, row) => sum + (row["credit"] as int),
+    );
+
+    final remainingBalance = totalDebit - totalCredit;
 
     pdf.addPage(
       pw.Page(
@@ -238,7 +347,9 @@ class _FeesScreenState extends State<FeesScreen> {
               pw.Text(
                 "Kisii University Fee Statement",
                 style: pw.TextStyle(
-                    fontSize: 20, fontWeight: pw.FontWeight.bold),
+                  fontSize: 22,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
               pw.SizedBox(height: 12),
               pw.Text("Name: ${user.fullName}"),
@@ -253,9 +364,9 @@ class _FeesScreenState extends State<FeesScreen> {
                   "Date",
                   "Ref",
                   "Description",
-                  "Debit",
-                  "Credit",
-                  "Balance"
+                  "Debit(KES)",
+                  "Credit(KES)",
+                  "Balance(KES)"
                 ],
                 data: transactions.map((row) {
                   return [
@@ -268,7 +379,26 @@ class _FeesScreenState extends State<FeesScreen> {
                     row["balance"].toString(),
                   ];
                 }).toList(),
-              )
+              ),
+              pw.Divider(),
+              pw.SizedBox(height: 12),
+              pw.Text(
+                "Total Debit: KES $totalDebit",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.Text(
+                "Total Credit: KES $totalCredit",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.Text(
+                "Remaining Balance: KES $remainingBalance",
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  color: remainingBalance > 0
+                      ? pw.PdfColor.fromInt(0xFFFF0000)
+                      : pw.PdfColor.fromInt(0xFF008000),
+                ),
+              ),
             ],
           );
         },
@@ -279,7 +409,6 @@ class _FeesScreenState extends State<FeesScreen> {
     final file = File("${dir.path}/fee_statement.pdf");
 
     await file.writeAsBytes(await pdf.save());
-
     return file;
   }
 }
@@ -292,17 +421,31 @@ class FeeTable extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
+    if (index >= data.length) {
+      return const DataRow(cells: [
+        DataCell(Text("")),
+        DataCell(Text("")),
+        DataCell(Text("")),
+        DataCell(Text("")),
+        DataCell(Text("")),
+        DataCell(Text("")),
+        DataCell(Text("")),
+      ]);
+    }
+
     final row = data[index];
 
-    return DataRow(cells: [
-      DataCell(Text(row["no"].toString())),
-      DataCell(Text(row["date"])),
-      DataCell(Text(row["ref"])),
-      DataCell(Text(row["description"])),
-      DataCell(Text(row["debit"].toString())),
-      DataCell(Text(row["credit"].toString())),
-      DataCell(Text(row["balance"].toString())),
-    ]);
+    return DataRow(
+      cells: [
+        DataCell(Text(row["no"].toString())),
+        DataCell(Text(row["date"].toString())),
+        DataCell(Text(row["ref"].toString())),
+        DataCell(Text(row["description"].toString())),
+        DataCell(Text(row["debit"].toString())),
+        DataCell(Text(row["credit"].toString())),
+        DataCell(Text(row["balance"].toString())),
+      ],
+    );
   }
 
   @override

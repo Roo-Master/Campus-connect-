@@ -225,7 +225,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       isLoading
                           ? const CircularProgressIndicator()
                           : SizedBox(
-                              width: double.infinity,
+                              width: 300,
                               child: ElevatedButton(
                                 onPressed: _submitForm,
                                 child: const Text("Create Event"),
