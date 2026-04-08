@@ -2,7 +2,7 @@ import 'package:campus_connect/screens/auth/forget_password_screen.dart';
 import 'package:campus_connect/screens/profile/privacy_policy_screen.dart';
 import 'package:campus_connect/screens/profile/termsof_service_screen.dart';
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../auth/login_screen.dart';
 import 'about_screen.dart';
 import 'help_screen.dart';

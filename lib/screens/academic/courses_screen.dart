@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/course_model.dart';
 import '../../widgets/course_card.dart';
 

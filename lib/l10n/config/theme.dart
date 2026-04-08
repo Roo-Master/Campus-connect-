@@ -1,7 +1,5 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/src/material/card_theme.dart';
 
 class AppTheme {
   // Color Palette
@@ -147,7 +145,7 @@ class AppTheme {
           borderSide: const BorderSide(color: error, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        labelStyle: TextStyle(color: textSecondary),
+        labelStyle: const TextStyle(color: textSecondary),
         hintStyle: TextStyle(color: Colors.grey.shade400),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -162,9 +160,9 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
         indicatorColor: primary.withOpacity(0.1),
-        labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return const TextStyle(
                 color: primary,
                 fontWeight: FontWeight.w600,
@@ -200,17 +198,17 @@ class AppTheme {
         elevation: 4,
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return primary;
             }
             return Colors.grey.shade400;
           },
         ),
-        trackColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return primary.withOpacity(0.5);
             }
             return Colors.grey.shade300;
@@ -317,9 +315,9 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: darkSurface,
         indicatorColor: primaryLight.withOpacity(0.2),
-        labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return const TextStyle(
                 color: primaryLight,
                 fontWeight: FontWeight.w600,
@@ -356,17 +354,17 @@ class AppTheme {
         elevation: 4,
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return primaryLight;
             }
             return Colors.grey.shade500;
           },
         ),
-        trackColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
               return primaryLight.withOpacity(0.5);
             }
             return Colors.grey.shade700;
@@ -399,6 +397,12 @@ class AppTheme {
         return Colors.red;
       case 'meeting':
         return Colors.cyan;
+        case 'scheduler':
+          return Colors.amber;
+          case 'transport':
+            return Colors.brown;
+            case 'attendance':
+              return Colors.lime;
       default:
         return primary;
     }

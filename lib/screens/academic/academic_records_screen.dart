@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/grade_model.dart';
 
 class AcademicRecordsScreen extends StatelessWidget {

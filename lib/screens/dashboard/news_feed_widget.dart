@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 
 // ==================== Enums ====================
 

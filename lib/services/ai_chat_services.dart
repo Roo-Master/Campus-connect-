@@ -1,24 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class CampusDataService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
   Future<String> getCampusContext() async {
-    String context = "";
+    // Replace this later with Firebase / database content
+    return """
+Campus Connect is a university assistant platform.
+It helps students with:
+- Admission information
+- Fee balance and payments
+- Course registration
+- Exam timetable
+- Results checking
+- Hostel services
+- Attendance
+- Library services
+- Notices and announcements
 
-    final events = await _db.collection('events').get();
-    final services = await _db.collection('services').get();
-
-    context += "Events:\n";
-    for (var doc in events.docs) {
-      context += "- ${doc['title']} on ${doc['date']}\n";
-    }
-
-    context += "\nServices:\n";
-    for (var doc in services.docs) {
-      context += "- ${doc['name']}: ${doc['hours']}\n";
-    }
-
-    return context;
+The assistant should answer politely, clearly, and professionally.
+If the user asks unrelated questions, still answer helpfully.
+""";
   }
 }

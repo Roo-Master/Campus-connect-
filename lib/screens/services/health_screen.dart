@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 
 class HealthScreen extends StatefulWidget {
   const HealthScreen({super.key});

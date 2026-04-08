@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../services/profile_services.dart';
 
 class IdCardScreen extends StatefulWidget {

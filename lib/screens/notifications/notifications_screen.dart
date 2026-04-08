@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/notification_service.dart' hide NotificationType;
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/notification_model.dart';
 
 

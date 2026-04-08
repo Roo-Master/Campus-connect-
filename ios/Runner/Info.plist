@@ -57,6 +57,11 @@
     <true/>
 
     <!-- Permissions -->
+     <key>NSMicrophoneUsageDescription</key>
+<string>This app uses the microphone for voice chat input.</string>
+
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>This app uses speech recognition to convert your voice into text.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>We need your location to show campus navigation.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

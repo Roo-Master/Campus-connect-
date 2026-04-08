@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/user_profile.dart';
 import '../profile/profile_screen.dart';
 import '../services/profile_services.dart';

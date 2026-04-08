@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/change_notifier.dart';
 import 'package:provider/provider.dart';
 import '../../ai/ai_chat_screen.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/course_model.dart';
 import '../../models/event_model.dart';
 import '../../models/grade_model.dart';
@@ -124,22 +124,6 @@ class HomeTab extends StatelessWidget {
             builder: (context, notificationService, _) {
               return Stack(
                 children: [
-IconButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AiChatScreen(),
-      ),
-    );
-  },
-  icon: const Icon(
-    Icons.psychology_outlined,
-    color: Colors.deepPurple,
-    size: 30,
-  ),
-),
-              
                   IconButton(
                     onPressed: () {
                       Navigator.push(
@@ -173,18 +157,69 @@ IconButton(
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          )
-        ],
+  IconButton(
+    icon: const Icon(Icons.settings_outlined),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
+    },
+  ),
+],
       ),
+
+
       drawer: _buildDrawer(context),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: "ai_chat_fab",
+        onPressed: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AiChatScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 0.3),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    )),
+                    child: child,
+                  ),
+                );
+              },
+              transitionDuration: const Duration(milliseconds: 500),
+            ),
+          );
+        },
+        icon: const Icon(Icons.psychology_outlined, color: Colors.white),
+        label: const Text(
+          "AI Assistant",
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            letterSpacing: 0.5,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
+        elevation: 16,
+        focusElevation: 20,
+        hoverElevation: 24,
+        highlightElevation: 20,
+        tooltip: "Ask AI anything about campus",
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        splashColor: Colors.white24,
+      ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -222,7 +257,7 @@ IconButton(
             ),
           ),
         ),
-      ),
+      )
     );
   }
 
@@ -314,6 +349,8 @@ IconButton(
                               fontWeight: FontWeight.bold),
                         ),
                       )
+
+                      
                     ],
                   ),
                 )
@@ -501,15 +538,7 @@ IconButton(
                   MaterialPageRoute(builder: (_) => const SettingsScreen()));
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.psychology_alt,
-                size: 28, color: Colors.deepPurple),
-            title: const Text('AI Chat Bot'),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const AiChatScreen()));
-            },
-          ),
+        
           ListTile(
             leading: const Icon(Icons.help_outline, color: Colors.brown),
             title: const Text('Help & Support'),
@@ -741,6 +770,7 @@ IconButton(
     );
   }
 }
+
 
 class EventsTab extends StatelessWidget {
   const EventsTab({super.key});

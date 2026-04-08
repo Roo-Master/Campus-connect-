@@ -2,7 +2,7 @@ import 'package:campus_connect/models/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
 import '../academic/academic_records_screen.dart';

@@ -1,53 +1,35 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
-import '../ai/backend/ai_model.dart';
+import 'package:campus_connect/ai/backend/ai_chat_message.dart';
+
 
 class AiChatService {
-
-  final String apiKey = "YOUR_OPENAI_API_KEY";
-
   Stream<String> sendMessageStream(List<AiChatMessage> messages) async* {
+    final userMessage = messages.last.content.toLowerCase();
 
-    final url = Uri.parse("https://api.openai.com/v1/chat/completions");
+    String response = _generateDemoResponse(userMessage);
 
-    final request = http.Request("POST", url);
-
-    request.headers.addAll({
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $apiKey"
-    });
-
-    request.body = jsonEncode({
-      "model": "gpt-4o-mini",
-      "stream": true,
-      "messages": messages.map((m) => m.toJson()).toList()
-    });
-
-    final response = await request.send();
-
-    final stream = response.stream
-        .transform(utf8.decoder)
-        .transform(const LineSplitter());
-
-    await for (var line in stream) {
-
-      if (line.startsWith("data: ")) {
-
-        final jsonStr = line.substring(6);
-
-        if (jsonStr == "[DONE]") break;
-
-        final data = jsonDecode(jsonStr);
-
-        final content =
-        data["choices"][0]["delta"]["content"];
-
-        if (content != null) {
-          yield content;
-        }
-      }
+    for (int i = 0; i < response.length; i++) {
+      await Future.delayed(const Duration(milliseconds: 18));
+      yield response[i];
     }
+  }
+
+  String _generateDemoResponse(String input) {
+    if (input.contains("fees")) {
+      return "You can check your **fee balance**, **payment history**, and **pending charges** from the Fees section in Campus Connect.";
+    } else if (input.contains("results")) {
+      return "Your **exam results** can be viewed once officially released by the university in the Results section.";
+    } else if (input.contains("attendance")) {
+      return "You can view your **attendance records** and signed sessions under the Attendance section.";
+    } else if (input.contains("hostel")) {
+      return "Hostel details such as **room allocation**, **status**, and **availability** are available under the Hostel section.";
+    } else if (input.contains("registration")) {
+      return "You can register units/courses through the **Course Registration** section once registration is open.";
+    } else if (input.contains("hello") || input.contains("hi")) {
+      return "Hello 👋\n\nWelcome to **Campus AI Assistant**. How can I help you today?";
+    }
+
+    return "I understand your question.\n\nPlease check the relevant section inside **Campus Connect**, or ask me something specific like:\n- Fees\n- Results\n- Attendance\n- Hostel\n- Registration";
   }
 }

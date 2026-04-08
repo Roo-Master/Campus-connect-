@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:campus_connect/ai/backend/ai_chat_message.dart';
+import 'package:campus_connect/services/ai_chat_services.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../services/ai_chart_services.dart';
-import '../services/ai_chat_services.dart';
 import '../services/faq_data.dart';
-import 'backend/ai_model.dart';
+import '../widgets/chat_bubble.dart';
+import '../widgets/chat_input_bar.dart';
+import '../widgets/typing_indicator.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -24,66 +24,70 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   final AiChatService _chatService = AiChatService();
   final CampusDataService _campusService = CampusDataService();
-
   final SpeechToText _speech = SpeechToText();
 
-  List<AiChatMessage> _messages = [
+  StreamSubscription<String>? _streamSubscription;
+
+  final List<AiChatMessage> _messages = [
     AiChatMessage(
-      role: "system",
-      content: "You are a helpful Campus Connect Assistant.",
+      role: "assistant",
+      content:
+          "Hello 👋\n\nWelcome to **Campus AI Assistant**.\nAsk me about:\n- Fees\n- Results\n- Attendance\n- Hostel\n- Registration",
     ),
   ];
-
-  StreamSubscription<String>? _streamSubscription;
 
   bool _isLoading = false;
   bool _isListening = false;
 
-  /// 🌐 Check Internet
   Future<bool> isOnline() async {
-    var result = await Connectivity().checkConnectivity();
+    final result = await Connectivity().checkConnectivity();
     return result != ConnectivityResult.none;
   }
 
-  /// 🎤 Start Listening
   void _startListening() async {
     bool available = await _speech.initialize();
-    if (available) {
-      setState(() => _isListening = true);
+    if (!available) return;
 
-      _speech.listen(onResult: (result) {
+    setState(() => _isListening = true);
+
+    _speech.listen(
+      onResult: (result) {
         setState(() {
           _controller.text = result.recognizedWords;
+          _controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: _controller.text.length),
+          );
         });
-      });
-    }
+      },
+    );
   }
 
-  /// 🛑 Stop Listening
   void _stopListening() {
     _speech.stop();
     setState(() => _isListening = false);
   }
 
-  /// 📩 Send Message
-  void _sendMessage({bool regenerate = false}) async {
+  Future<void> _sendMessage({bool regenerate = false}) async {
     final text = regenerate
         ? _messages.lastWhere((m) => m.role == "user").content
         : _controller.text.trim();
 
     if (text.isEmpty || _isLoading) return;
 
-    _controller.clear();
+    if (!regenerate) _controller.clear();
+    _stopListening();
 
-    bool online = await isOnline();
+    final online = await isOnline();
 
     /// 🔴 OFFLINE MODE
     if (!online) {
       final response = faq.entries
           .firstWhere(
             (e) => text.toLowerCase().contains(e.key),
-            orElse: () =>
-                const MapEntry("default", "No offline answer available."),
+            orElse: () => const MapEntry(
+              "default",
+              "You are offline. No exact offline answer found.",
+            ),
           )
           .value;
 
@@ -96,15 +100,15 @@ class _AiChatScreenState extends State<AiChatScreen> {
       return;
     }
 
-    /// 🟢 ONLINE MODE (Firebase + AI)
+    /// 🟢 ONLINE MODE
     final campusData = await _campusService.getCampusContext();
 
-    final enhancedMessage = """
+    final enhancedPrompt = """
 You are Campus Connect Assistant.
 
 $campusData
 
-User: $text
+User Question: $text
 """;
 
     setState(() {
@@ -114,49 +118,57 @@ User: $text
     });
 
     _scrollToBottom();
-
     _streamSubscription?.cancel();
 
-    _streamSubscription = _chatService.sendMessageStream([
-      ..._messages,
-      AiChatMessage(role: "user", content: enhancedMessage),
-    ]).listen((chunk) {
-      setState(() {
-        _messages.last = AiChatMessage(
-          role: "assistant",
-          content: _messages.last.content + chunk,
-        );
-      });
-      _scrollToBottom();
-    }, onDone: () {
-      setState(() => _isLoading = false);
-    }, onError: (_) {
-      setState(() {
-        _messages.last = AiChatMessage(
-          role: "assistant",
-          content: "⚠️ Something went wrong.",
-        );
-        _isLoading = false;
-      });
-    });
+    _streamSubscription = _chatService
+        .sendMessageStream([
+          ..._messages,
+          AiChatMessage(role: "user", content: enhancedPrompt),
+        ])
+        .listen(
+      (chunk) {
+        if (!mounted) return;
+
+        setState(() {
+          final current = _messages.last;
+          _messages[_messages.length - 1] = AiChatMessage(
+            role: current.role,
+            content: current.content + chunk,
+          );
+        });
+
+        _scrollToBottom();
+      },
+      onDone: () {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+      },
+      onError: (_) {
+        if (!mounted) return;
+        setState(() {
+          _messages[_messages.length - 1] = AiChatMessage(
+            role: "assistant",
+            content: "⚠️ Something went wrong. Please try again.",
+          );
+          _isLoading = false;
+        });
+      },
+    );
   }
 
-  /// 🛑 Stop AI Generation
   void _stopGeneration() {
     _streamSubscription?.cancel();
     setState(() => _isLoading = false);
   }
 
-  /// ⬇ Scroll
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 200,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent + 200,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -165,150 +177,85 @@ User: $text
     _controller.dispose();
     _scrollController.dispose();
     _streamSubscription?.cancel();
+    _speech.stop();
     super.dispose();
   }
 
-  /// 🖥 UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF343541),
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: const Color(0xFF202123),
-        title: const Text("Campus AI Assistant"),
+        title: const Text(
+          "Campus AI Assistant",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: false,
+        actions: [
+          if (_isLoading)
+            IconButton(
+              onPressed: _stopGeneration,
+              icon: const Icon(Icons.stop_circle_outlined),
+              tooltip: "Stop generating",
+            ),
+        ],
       ),
       body: Column(
         children: [
-          /// 💬 Chat List
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _messages.length,
-              itemBuilder: (_, index) {
-                final msg = _messages[index];
-                if (msg.role == "system") return const SizedBox();
-
-                final isUser = msg.role == "user";
-
-                return Container(
-                  color: isUser
-                      ? const Color(0xFF343541)
-                      : const Color(0xFF444654),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: isUser ? Colors.blue : Colors.green,
-                        child: Text(
-                          isUser ? "U" : "AI",
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            MarkdownBody(
-                              data: msg.content,
-                              selectable: true,
-                              styleSheet: MarkdownStyleSheet(
-                                p: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 15,
+            child: _messages.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Start chatting...",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    itemCount: _messages.length + (_isLoading ? 1 : 0),
+                    itemBuilder: (_, index) {
+                      if (_isLoading && index == _messages.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Color(0xFF10B981),
+                                child: Text(
+                                  "AI",
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
-                            ),
-                            if (!isUser)
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.copy,
-                                        color: Colors.white70, size: 18),
-                                    onPressed: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: msg.content));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(content: Text("Copied")),
-                                      );
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.refresh,
-                                        color: Colors.white70, size: 18),
-                                    onPressed: () =>
-                                        _sendMessage(regenerate: true),
-                                  ),
-                                ],
-                              )
-                          ],
-                        ),
-                      )
-                    ],
+                              SizedBox(width: 12),
+                              TypingIndicator(),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final msg = _messages[index];
+                      return ChatBubble(
+                        message: msg,
+                        isUser: msg.role == "user",
+                        onRegenerate: msg.role == "assistant"
+                            ? () => _sendMessage(regenerate: true)
+                            : null,
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
-
-          /// ⏹ Stop Button
-          if (_isLoading)
-            TextButton(
-              onPressed: _stopGeneration,
-              child: const Text("Stop generating"),
-            ),
-
-          /// ✍ Input Bar
-          _buildInputBar(),
-        ],
-      ),
-    );
-  }
-
-  /// ✍ Input UI
-  Widget _buildInputBar() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      color: const Color(0xFF202123),
-      child: Row(
-        children: [
-          /// 🎤 Mic
-          IconButton(
-            icon: Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              color: Colors.white,
-            ),
-            onPressed: _isListening ? _stopListening : _startListening,
-          ),
-
-          /// ✍ Text
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              onSubmitted: (_) => _sendMessage(),
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: "Ask about campus...",
-                hintStyle: const TextStyle(color: Colors.white54),
-                filled: true,
-                fillColor: const Color(0xFF40414F),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(width: 8),
-
-          /// 📤 Send
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.white),
-            onPressed: _sendMessage,
+          ChatInputBar(
+            controller: _controller,
+            isListening: _isListening,
+            onMicTap: _isListening ? _stopListening : _startListening,
+            onSend: _sendMessage,
           ),
         ],
       ),

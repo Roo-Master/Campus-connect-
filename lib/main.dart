@@ -4,7 +4,7 @@ import 'package:campus_connect/screens/services/profile_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'config/theme.dart';
+import 'l10n/config/theme.dart';
 import 'models/user_model.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';

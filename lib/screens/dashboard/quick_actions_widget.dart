@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 
 class QuickActionsWidget extends StatelessWidget {
   final Function(String) onActionTap;

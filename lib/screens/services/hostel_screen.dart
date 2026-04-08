@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 
 class HostelScreen extends StatefulWidget {
   const HostelScreen({super.key});

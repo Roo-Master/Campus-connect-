@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../config/theme.dart';
+import '../../l10n/config/theme.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/loading_indicator.dart';
 import '../dashboard/dashboard_screen.dart';
